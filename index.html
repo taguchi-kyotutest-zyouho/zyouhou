@@ -2,50 +2,117 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>情報Iクイズ</title>
+  <title>情報I クイズ</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .question { margin-bottom: 20px; }
-    button { margin-top: 10px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    .quiz-box {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+    .choice {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .choice:hover {
+      background: #d0eaff;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>情報I 共通テスト用語クイズ</h1>
-  <div id="quiz"></div>
+  <h1>情報I 用語クイズ（試作品）</h1>
+  <div class="quiz-box">
+    <p id="question">ここに問題文が出るよ</p>
+    <div id="choices"></div>
+    <p id="result"></p>
+    <button id="nextBtn" style="display:none;">次の問題へ</button>
+  </div>
+
   <script>
+    // --- 問題データ ---
     const quizData = [
       {
-        question: "コンピュータの基本的な処理手順を表すものは？",
-        choices: ["アルゴリズム", "プロトコル", "ビット", "ポート番号"],
+        question: "IPアドレスは何を識別するための番号？",
+        choices: ["コンピュータや機器", "ユーザーの名前", "プログラミング言語"],
         answer: 0
       },
       {
-        question: "インターネットでの通信規約を表すものは？",
-        choices: ["アルゴリズム", "プロトコル", "フローチャート", "キャッシュ"],
+        question: "情報を0と1で表現する最小単位は？",
+        choices: ["バイト", "ビット", "レコード"],
         answer: 1
+      },
+      {
+        question: "インターネットで情報を暗号化して送受信する仕組みは？",
+        choices: ["SSL/TLS", "HTML", "FTP"],
+        answer: 0
       }
     ];
 
-    const quizEl = document.getElementById("quiz");
+    let currentQuiz = 0;
 
-    quizData.forEach((q, i) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      div.innerHTML = `<p>${i+1}. ${q.question}</p>`;
-      q.choices.forEach((choice, idx) => {
+    const questionEl = document.getElementById("question");
+    const choicesEl = document.getElementById("choices");
+    const resultEl = document.getElementById("result");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function loadQuiz() {
+      const quiz = quizData[currentQuiz];
+      questionEl.textContent = quiz.question;
+      choicesEl.innerHTML = "";
+      resultEl.textContent = "";
+      nextBtn.style.display = "none";
+
+      quiz.choices.forEach((choice, index) => {
         const btn = document.createElement("button");
         btn.textContent = choice;
-        btn.onclick = () => {
-          if(idx === q.answer){
-            alert("正解！");
-          } else {
-            alert("不正解！");
-          }
-        };
-        div.appendChild(btn);
+        btn.className = "choice";
+        btn.onclick = () => checkAnswer(index);
+        choicesEl.appendChild(btn);
       });
-      quizEl.appendChild(div);
-    });
+    }
+
+    function checkAnswer(selected) {
+      const quiz = quizData[currentQuiz];
+      if (selected === quiz.answer) {
+        resultEl.textContent = "正解！🎉";
+        resultEl.style.color = "green";
+      } else {
+        resultEl.textContent = "不正解… 😢";
+        resultEl.style.color = "red";
+      }
+      nextBtn.style.display = "inline-block";
+    }
+
+    nextBtn.onclick = () => {
+      currentQuiz++;
+      if (currentQuiz < quizData.length) {
+        loadQuiz();
+      } else {
+        questionEl.textContent = "全問終了！お疲れさま！";
+        choicesEl.innerHTML = "";
+        resultEl.textContent = "";
+        nextBtn.style.display = "none";
+      }
+    };
+
+    // 最初の問題を読み込む
+    loadQuiz();
   </script>
 </body>
 </html>
+
+
